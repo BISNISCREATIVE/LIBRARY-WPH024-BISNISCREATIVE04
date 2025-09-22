@@ -22,6 +22,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -58,6 +59,20 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      backgroundImage: {
+        "gradient-hero": "var(--gradient-hero)",
+        "gradient-hero-light": "var(--gradient-hero-light)",
+        "gradient-fiction": "var(--gradient-fiction)",
+        "gradient-nonfiction": "var(--gradient-nonfiction)",
+        "gradient-selfimprovement": "var(--gradient-selfimprovement)",
+        "gradient-finance": "var(--gradient-finance)",
+        "gradient-science": "var(--gradient-science)",
+        "gradient-education": "var(--gradient-education)",
+      },
+      boxShadow: {
+        "card": "var(--shadow-card)",
+        "hero": "var(--shadow-hero)",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -87,5 +102,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/line-clamp")],
 } satisfies Config;

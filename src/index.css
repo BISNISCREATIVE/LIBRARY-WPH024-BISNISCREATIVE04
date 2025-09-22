@@ -2,39 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Booky Library Design System - Blue gradient theme inspired by knowledge and learning */
 
 @layer base {
   :root {
+    /* Core Background & Foreground */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 222 22% 15%;
 
+    /* Card Components */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 22% 15%;
 
+    /* Popover Components */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222 22% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary Brand Colors - Booky Blue Theme */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 217 91% 55%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary Colors */
+    --secondary: 217 20% 96%;
+    --secondary-foreground: 222 22% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted Colors for subtle elements */
+    --muted: 217 20% 96%;
+    --muted-foreground: 222 13% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent Colors */
+    --accent: 217 20% 96%;
+    --accent-foreground: 222 22% 15%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive/Error States */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Border & Input Styling */
+    --border: 217 20% 90%;
+    --input: 217 20% 90%;
+    --ring: 217 91% 60%;
+
+    /* Hero Gradient - Main blue gradient for hero sections */
+    --gradient-hero: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(197, 87%, 65%));
+    --gradient-hero-light: linear-gradient(135deg, hsl(217, 91%, 95%), hsl(197, 87%, 95%));
+    
+    /* Category Card Gradients */
+    --gradient-fiction: linear-gradient(135deg, hsl(45, 100%, 70%), hsl(45, 100%, 80%));
+    --gradient-nonfiction: linear-gradient(135deg, hsl(217, 91%, 70%), hsl(217, 91%, 80%));
+    --gradient-selfimprovement: linear-gradient(135deg, hsl(140, 70%, 70%), hsl(140, 70%, 80%));
+    --gradient-finance: linear-gradient(135deg, hsl(197, 87%, 70%), hsl(197, 87%, 80%));
+    --gradient-science: linear-gradient(135deg, hsl(260, 70%, 70%), hsl(260, 70%, 80%));
+    --gradient-education: linear-gradient(135deg, hsl(30, 90%, 70%), hsl(30, 90%, 80%));
+
+    /* Shadows for depth */
+    --shadow-card: 0 4px 6px -1px hsl(217 91% 60% / 0.1);
+    --shadow-hero: 0 20px 25px -5px hsl(217 91% 60% / 0.1);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --radius: 0.5rem;
 
