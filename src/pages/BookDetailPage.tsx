@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 import { Star, ArrowLeft, BookOpen, Calendar, User, Globe, Hash } from 'lucide-react';
 import { dummyBooks } from '@/data/dummyBooks';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
@@ -33,6 +34,7 @@ export const BookDetailPage: React.FC = () => {
             </Button>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -248,6 +250,8 @@ export const BookDetailPage: React.FC = () => {
           </div>
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 };

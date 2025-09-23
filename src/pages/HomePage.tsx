@@ -6,9 +6,10 @@ import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
 import { CategorySection } from '@/components/CategorySection';
 import { BookCard } from '@/components/BookCard';
+import { Footer } from '@/components/Footer';
 import { getFeaturedBooks, popularAuthors } from '@/data/dummyBooks';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -82,40 +83,7 @@ export const HomePage: React.FC = () => {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-muted/30 px-4 py-12 mt-16">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          {/* Logo */}
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-primary">Booky</span>
-          </div>
-
-          {/* Description */}
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Discover inspiring stories & timeless knowledge. Ready to borrow anytime. 
-            Explore online or visit our nearest library branch.
-          </p>
-
-          {/* Social Media */}
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-foreground">Follow on Social Media</p>
-            <div className="flex justify-center space-x-4">
-              <Button variant="ghost" size="sm" className="w-10 h-10 p-0">
-                <Facebook className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="sm" className="w-10 h-10 p-0">
-                <Instagram className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="sm" className="w-10 h-10 p-0">
-                <Linkedin className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
