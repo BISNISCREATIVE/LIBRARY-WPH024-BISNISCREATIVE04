@@ -195,6 +195,76 @@ export const popularAuthors = [
 // Get featured/recommended books (first 10)
 export const getFeaturedBooks = () => dummyBooks.slice(0, 10);
 
+// Generate additional dummy books
+const generateDummyBook = (id: number): Book => {
+  const titles = [
+    "The Mystery of Time", "Digital Dreams", "Ocean's Secret", "Mountain Tales", 
+    "City Lights", "Forest Whispers", "Desert Storm", "River Journey",
+    "Sky Adventures", "Underground Stories", "Cosmic Voyage", "Earth Chronicles",
+    "Fire and Ice", "Wind Dancer", "Stone Guardian", "Metal Hearts",
+    "Crystal Vision", "Shadow Realm", "Light Bearer", "Dark Waters",
+    "Golden Path", "Silver Moon", "Bronze Age", "Iron Will",
+    "Copper Dreams", "Steel Heart", "Diamond Mind", "Ruby Eyes"
+  ];
+  
+  const authors = [
+    "Alex Johnson", "Sarah Williams", "Michael Brown", "Emma Davis",
+    "John Smith", "Lisa Anderson", "David Wilson", "Maria Garcia",
+    "James Miller", "Jennifer Taylor", "Robert Jones", "Patricia Moore",
+    "Christopher Lee", "Linda White", "Matthew Hall", "Barbara Allen"
+  ];
+  
+  const categories = ["Fiction", "Romance", "Mystery", "Adventure", "Horror", "Self-Improvement", "Science"];
+  
+  const coverUrls = [
+    "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1444927714506-8492d94b5ba0?w=300&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=300&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=400&fit=crop",
+    "https://images.unsplash.com/photo-1520637836862-4d197d17c55a?w=300&h=400&fit=crop"
+  ];
+
+  return {
+    id,
+    title: titles[id % titles.length],
+    author: authors[id % authors.length],
+    category: categories[id % categories.length],
+    stock: Math.floor(Math.random() * 10) + 1,
+    rating: 4.0 + Math.random(),
+    reviews_count: Math.floor(Math.random() * 200) + 10,
+    cover_url: coverUrls[id % coverUrls.length],
+    description: `An engaging ${categories[id % categories.length].toLowerCase()} story that will captivate readers from beginning to end.`,
+    published_year: 2015 + Math.floor(Math.random() * 9),
+    pages: 200 + Math.floor(Math.random() * 300),
+    language: "English",
+    isbn: `978-${Math.floor(Math.random() * 9)}-${Math.floor(Math.random() * 999)}-${Math.floor(Math.random() * 99999)}-${Math.floor(Math.random() * 9)}`,
+    publisher: "Random House"
+  };
+};
+
+// Get books with pagination support
+export const getBooks = (page: number = 1, limit: number = 10) => {
+  const allBooks = [...dummyBooks];
+  
+  // Generate additional books if we need more
+  const totalNeeded = page * limit;
+  while (allBooks.length < totalNeeded) {
+    allBooks.push(generateDummyBook(allBooks.length + 1));
+  }
+  
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  
+  return {
+    books: allBooks.slice(startIndex, endIndex),
+    hasMore: true, // Always has more for unlimited loading
+    total: allBooks.length
+  };
+};
+
 // Get popular books (random selection)
 export const getPopularBooks = (limit: number = 5) => {
   return dummyBooks

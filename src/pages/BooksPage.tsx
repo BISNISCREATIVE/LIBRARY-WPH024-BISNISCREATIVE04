@@ -1,19 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { BookCard } from '@/components/BookCard';
 import { CategorySection } from '@/components/CategorySection';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter } from 'lucide-react';
-import { getFeaturedBooks } from '@/data/dummyBooks';
+import { Search, Filter, Loader2 } from 'lucide-react';
+import { getBooks } from '@/data/dummyBooks';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import { setSearchQuery, setSortBy, setSortOrder } from '@/features/ui/uiSlice';
+import { Book } from '@/api/books';
 
 export const BooksPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { searchQuery, sortBy, sortOrder } = useAppSelector(state => state.ui);
-  const books = getFeaturedBooks();
+  const [books, setBooks] = useState<Book[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    // Load initial books
+    const result = getBooks(1, 20);
+    setBooks(result.books);
+    setHasMore(result.hasMore);
+  }, []);
+
+  const handleLoadMore = async () => {
+    setIsLoading(true);
+    
+    // Simulate loading delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const nextPage = currentPage + 1;
+    const result = getBooks(nextPage, 20);
+    
+    setBooks(prevBooks => [...prevBooks, ...result.books]);
+    setCurrentPage(nextPage);
+    setHasMore(result.hasMore);
+    setIsLoading(false);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +108,7 @@ export const BooksPage: React.FC = () => {
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold">All Books</h1>
               <p className="text-muted-foreground">
-                {books.length} books found
+                {books.length} books loaded
               </p>
             </div>
 
@@ -93,12 +119,26 @@ export const BooksPage: React.FC = () => {
               ))}
             </div>
 
-            {/* Pagination */}
-            <div className="flex justify-center mt-12">
-              <Button variant="outline">
-                Load More Books
-              </Button>
-            </div>
+            {/* Load More Button */}
+            {hasMore && (
+              <div className="flex justify-center mt-12">
+                <Button 
+                  variant="outline" 
+                  onClick={handleLoadMore}
+                  disabled={isLoading}
+                  className="min-w-[150px]"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      Loading...
+                    </>
+                  ) : (
+                    'Load More Books'
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </main>
