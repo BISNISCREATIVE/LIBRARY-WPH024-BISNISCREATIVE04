@@ -9,6 +9,11 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { BooksPage } from "./pages/BooksPage";
 import { BookDetailPage } from "./pages/BookDetailPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { SuccessPage } from "./pages/SuccessPage";
+import { CategoryPage } from "./pages/CategoryPage";
+import { AuthorPage } from "./pages/AuthorPage";
+import { AdminPage } from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -23,6 +28,11 @@ const App = () => (
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/books" element={<BooksPage />} />
           <Route path="/books/:id" element={<BookDetailPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/category/:category" element={<CategoryPage />} />
+          <Route path="/author/:authorName" element={<AuthorPage />} />
+          <Route path="/admin" element={<AdminPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

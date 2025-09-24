@@ -65,25 +65,23 @@ export const LoginPage: React.FC = () => {
     dispatch(loginStart());
 
     try {
-      // TODO: Replace with actual API call
-      // const response = await authAPI.login(formData);
+      const response = await fetch('https://belibraryformentee-production.up.railway.app/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
       
-      // Mock successful login for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
       
-      const mockUser = {
-        id: 1,
-        email: formData.email,
-        name: 'John Doe',
-        role: 'USER' as const,
-        avatar: '/api/placeholder/64/64?text=JD'
-      };
-      
-      const mockToken = 'mock-jwt-token';
+      const data = await response.json();
       
       dispatch(loginSuccess({
-        user: mockUser,
-        token: mockToken
+        user: data.user,
+        token: data.token
       }));
 
       toast({

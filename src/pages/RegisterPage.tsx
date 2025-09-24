@@ -79,29 +79,27 @@ export const RegisterPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Replace with actual API call
-      // const response = await authAPI.register({
-      //   name: formData.name,
-      //   email: formData.email,
-      //   password: formData.password,
-      // });
+      const response = await fetch('https://belibraryformentee-production.up.railway.app/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
       
-      // Mock successful registration for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
       
-      const mockUser = {
-        id: 1,
-        email: formData.email,
-        name: formData.name,
-        role: 'USER' as const,
-        avatar: `/api/placeholder/64/64?text=${formData.name.charAt(0).toUpperCase()}`
-      };
-      
-      const mockToken = 'mock-jwt-token';
+      const data = await response.json();
       
       dispatch(loginSuccess({
-        user: mockUser,
-        token: mockToken
+        user: data.user,
+        token: data.token
       }));
 
       toast({
