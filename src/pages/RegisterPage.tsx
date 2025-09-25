@@ -79,7 +79,7 @@ export const RegisterPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://belibraryformentee-production.up.railway.app/auth/register', {
+      const response = await fetch('https://belibraryformentee-production.up.railway.app/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,10 +104,15 @@ export const RegisterPage: React.FC = () => {
 
       toast({
         title: 'Registration Successful',
-        description: 'Welcome to Booky! Your account has been created successfully.',
+        description: `Welcome to Booky${data.user?.name ? ', ' + data.user.name : ''}! Your account has been created successfully.`,
       });
 
-      navigate('/');
+      // Redirect based on user role
+      if (data.user?.role === 'ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       setErrors({
         general: 'Registration failed. Please try again.'

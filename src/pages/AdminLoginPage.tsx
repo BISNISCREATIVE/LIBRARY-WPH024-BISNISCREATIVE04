@@ -5,12 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { BookOpen, Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { BookOpen, Eye, EyeOff, Mail, Lock, Shield } from 'lucide-react';
 import { useAppDispatch } from '@/app/hooks';
 import { loginStart, loginSuccess, loginFailure } from '@/features/auth/authSlice';
 import { toast } from '@/hooks/use-toast';
 
-export const LoginPage: React.FC = () => {
+export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   
@@ -79,31 +79,32 @@ export const LoginPage: React.FC = () => {
       
       const data = await response.json();
       
+      // Check if user is admin
+      if (data.user?.role !== 'ADMIN') {
+        throw new Error('Access denied. Admin credentials required.');
+      }
+      
       dispatch(loginSuccess({
         user: data.user,
         token: data.token
       }));
 
       toast({
-        title: 'Login Successful',
-        description: `Welcome back${data.user?.name ? ', ' + data.user.name : ''}! You have been logged in successfully.`,
+        title: 'Admin Login Successful',
+        description: `Welcome back, ${data.user?.name || 'Admin'}! Access granted to admin panel.`,
       });
 
-      // Redirect based on user role
-      if (data.user?.role === 'ADMIN') {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
+      navigate('/admin');
     } catch (error) {
       dispatch(loginFailure());
+      const errorMessage = error instanceof Error ? error.message : 'Invalid credentials or insufficient permissions.';
       setErrors({
-        general: 'Invalid email or password. Please try again.'
+        general: errorMessage
       });
       
       toast({
-        title: 'Login Failed',
-        description: 'Invalid email or password. Please try again.',
+        title: 'Admin Login Failed',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -112,72 +113,75 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero-light flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center shadow-lg">
+              <Shield className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-primary">Booky</span>
+            <span className="text-2xl font-bold text-white">Admin Portal</span>
           </Link>
         </div>
 
-        <Card className="shadow-hero">
+        <Card className="shadow-2xl border-slate-700 bg-slate-800/50 backdrop-blur">
           <CardHeader className="text-center space-y-2">
-            <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-            <CardDescription>
-              Sign in to your account to continue your reading journey
+            <CardTitle className="text-2xl font-bold text-white flex items-center justify-center gap-2">
+              <Shield className="w-6 h-6 text-red-500" />
+              Admin Access
+            </CardTitle>
+            <CardDescription className="text-slate-300">
+              Sign in with your administrator credentials
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {errors.general && (
-              <Alert variant="destructive">
-                <AlertDescription>{errors.general}</AlertDescription>
+              <Alert variant="destructive" className="bg-red-900/50 border-red-700">
+                <AlertDescription className="text-red-200">{errors.general}</AlertDescription>
               </Alert>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-slate-200">Admin Email</Label>
                 <div className="relative">
                   <Input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="Enter admin email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
+                    className={`pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-red-500 ${errors.email ? 'border-red-500' : ''}`}
                   />
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                 </div>
                 {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
+                  <p className="text-sm text-red-400">{errors.email}</p>
                 )}
               </div>
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-slate-200">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
+                    placeholder="Enter admin password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={`pl-10 pr-10 ${errors.password ? 'border-destructive' : ''}`}
+                    className={`pl-10 pr-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-red-500 ${errors.password ? 'border-red-500' : ''}`}
                   />
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 text-slate-400 hover:text-white"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
@@ -188,28 +192,28 @@ export const LoginPage: React.FC = () => {
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
+                  <p className="text-sm text-red-400">{errors.password}</p>
                 )}
               </div>
 
               {/* Submit Button */}
               <Button 
                 type="submit" 
-                className="w-full" 
+                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-2.5" 
                 disabled={isLoading}
               >
-                {isLoading ? 'Signing in...' : 'Sign In'}
+                {isLoading ? 'Authenticating...' : 'Access Admin Panel'}
               </Button>
             </form>
 
-            {/* Register Link */}
+            {/* User Login Link */}
             <div className="text-center text-sm">
-              <span className="text-muted-foreground">Don't have an account? </span>
+              <span className="text-slate-400">Not an admin? </span>
               <Link 
-                to="/register" 
-                className="text-primary hover:underline font-medium"
+                to="/login" 
+                className="text-red-400 hover:text-red-300 hover:underline font-medium"
               >
-                Sign up
+                User Login
               </Link>
             </div>
 
@@ -217,7 +221,7 @@ export const LoginPage: React.FC = () => {
             <div className="text-center">
               <Link 
                 to="/" 
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="text-sm text-slate-400 hover:text-slate-300 transition-colors"
               >
                 ← Back to Home
               </Link>
