@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -7,13 +7,41 @@ import { HeroSection } from '@/components/HeroSection';
 import { CategorySection } from '@/components/CategorySection';
 import { BookCard } from '@/components/BookCard';
 import { Footer } from '@/components/Footer';
-import { getFeaturedBooks, popularAuthors } from '@/data/dummyBooks';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen } from 'lucide-react';
+import { booksAPI, Book } from '@/api/books';
+import { useToast } from '@/hooks/use-toast';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const featuredBooks = getFeaturedBooks();
+  const { toast } = useToast();
+  const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
+  const [popularBooks, setPopularBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadHomeData = async () => {
+      try {
+        setLoading(true);
+        const [featured, popular] = await Promise.all([
+          booksAPI.getFeaturedBooks(5),
+          booksAPI.getPopularBooks(10)
+        ]);
+        setFeaturedBooks(featured);
+        setPopularBooks(popular);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load books",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadHomeData();
+  }, [toast]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,35 +79,27 @@ export const HomePage: React.FC = () => {
           </div>
         </section>
 
-        {/* Popular Authors Section */}
+        {/* Popular Books Section */}
         <section className="px-4 mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Popular Authors</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6">Popular Books</h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {popularAuthors.map((author) => (
-              <div 
-                key={author.id}
-                className="flex items-center space-x-3 p-4 rounded-lg hover:bg-accent transition-colors cursor-pointer"
-                onClick={() => navigate(`/authors/${author.id}`)}
-              >
-                <Avatar className="w-12 h-12">
-                  <AvatarImage src={author.avatar} alt={author.name} />
-                  <AvatarFallback>
-                    {author.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">{author.name}</p>
-                  <div className="flex items-center space-x-1">
-                    <BookOpen className="w-3 h-3 text-primary" />
-                    <span className="text-xs text-muted-foreground">
-                      {author.booksCount} books
-                    </span>
-                  </div>
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-muted rounded-lg aspect-[3/4] mb-2"></div>
+                  <div className="h-4 bg-muted rounded mb-1"></div>
+                  <div className="h-3 bg-muted rounded w-2/3"></div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {popularBooks.map((book) => (
+                <BookCard key={book.id} book={book} />
+              ))}
+            </div>
+          )}
         </section>
       </main>
 

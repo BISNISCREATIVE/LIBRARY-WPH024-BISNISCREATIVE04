@@ -14,6 +14,7 @@ import { SuccessPage } from "./pages/SuccessPage";
 import { CategoryPage } from "./pages/CategoryPage";
 import { AuthorPage } from "./pages/AuthorPage";
 import { AdminPage } from "./pages/AdminPage";
+import { CheckoutPage } from "./components/CheckoutPage";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/author/:authorName" element={<AuthorPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/admin" element={<AdminPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

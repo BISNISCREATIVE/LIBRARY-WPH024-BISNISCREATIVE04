@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Sheet,
   SheetContent,
@@ -6,19 +7,20 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { ShoppingCart, Trash2, BookOpen, Plus, Minus } from 'lucide-react';
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
-import { removeFromCart, clearCart, setCartOpen } from '@/features/cart/cartSlice';
-import { toast } from '@/hooks/use-toast';
+import { removeFromCart, updateQuantity, toggleCart, setCartOpen } from '@/features/cart/cartSlice';
+import { ShoppingCart, Minus, Plus, Trash2, BookOpen } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export const CartSheet: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { books: cartBooks, isOpen } = useAppSelector(state => state.cart);
   const { isAuthenticated } = useAppSelector(state => state.auth);
+  const { toast } = useToast();
 
   const handleRemoveFromCart = (bookId: number) => {
     dispatch(removeFromCart(bookId));
@@ -28,22 +30,17 @@ export const CartSheet: React.FC = () => {
     });
   };
 
-  const handleClearCart = () => {
-    dispatch(clearCart());
-    toast({
-      title: 'Cart Cleared',
-      description: 'All books have been removed from your cart.',
-    });
+  const handleUpdateQuantity = (bookId: number, quantity: number) => {
+    if (quantity < 1) {
+      handleRemoveFromCart(bookId);
+      return;
+    }
+    dispatch(updateQuantity({ id: bookId, quantity }));
   };
 
-  const handleBorrowAll = () => {
-    // TODO: Implement actual borrowing logic
-    toast({
-      title: 'Borrow Request Sent',
-      description: `Request to borrow ${cartBooks.length} book(s) has been sent.`,
-    });
-    dispatch(clearCart());
+  const handleCheckout = () => {
     dispatch(setCartOpen(false));
+    navigate('/checkout');
   };
 
   if (!isAuthenticated) {
@@ -100,11 +97,27 @@ export const CartSheet: React.FC = () => {
                       <p className="text-xs text-muted-foreground mt-1">
                         {book.author}
                       </p>
-                      {book.isbn && (
-                        <p className="text-xs text-muted-foreground">
-                          ISBN: {book.isbn}
-                        </p>
-                      )}
+                      
+                      {/* Quantity Controls */}
+                      <div className="flex items-center space-x-2 mt-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleUpdateQuantity(book.id, book.quantity - 1)}
+                          className="w-8 h-8 p-0"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </Button>
+                        <span className="text-sm font-medium w-8 text-center">{book.quantity}</span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleUpdateQuantity(book.id, book.quantity + 1)}
+                          className="w-8 h-8 p-0"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </div>
 
                     <Button
@@ -119,32 +132,22 @@ export const CartSheet: React.FC = () => {
                 ))}
               </div>
 
-              <Separator />
-
               {/* Cart Summary */}
-              <div className="space-y-3">
+              <div className="space-y-3 border-t pt-4">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Total Books:</span>
-                  <Badge variant="outline">{cartBooks.length}</Badge>
+                  <Badge variant="outline">
+                    {cartBooks.reduce((sum, book) => sum + book.quantity, 0)}
+                  </Badge>
                 </div>
 
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleClearCart}
-                    className="flex-1"
-                  >
-                    Clear Cart
-                  </Button>
-                  <Button
-                    onClick={handleBorrowAll}
-                    className="flex-1"
-                    disabled={cartBooks.length === 0}
-                  >
-                    Borrow All
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleCheckout}
+                  className="w-full"
+                  disabled={cartBooks.length === 0}
+                >
+                  Proceed to Checkout
+                </Button>
               </div>
             </>
           )}
