@@ -217,6 +217,13 @@ export const AdminLoginPage: React.FC = () => {
               </Link>
             </div>
 
+            {/* Demo Credentials */}
+            <div className="text-center text-xs text-slate-400 bg-slate-700/50 p-3 rounded-md">
+              <p><strong className="text-red-400">Demo Admin Credentials:</strong></p>
+              <p className="mt-1">Email: admin@demo.com</p>
+              <p>Password: admin123</p>
+            </div>
+
             {/* Back to Home */}
             <div className="text-center">
               <Link 

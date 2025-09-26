@@ -203,14 +203,30 @@ export const LoginPage: React.FC = () => {
             </form>
 
             {/* Register Link */}
-            <div className="text-center text-sm">
-              <span className="text-muted-foreground">Don't have an account? </span>
-              <Link 
-                to="/register" 
-                className="text-primary hover:underline font-medium"
-              >
-                Sign up
-              </Link>
+            <div className="text-center text-sm space-y-2">
+              <div>
+                <span className="text-muted-foreground">Don't have an account? </span>
+                <Link 
+                  to="/register" 
+                  className="text-primary hover:underline font-medium"
+                >
+                  Sign up
+                </Link>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Admin? </span>
+                <Link 
+                  to="/admin/login" 
+                  className="text-primary hover:underline font-medium"
+                >
+                  Admin Login
+                </Link>
+              </div>
+              <div className="text-xs text-muted-foreground mt-4 p-2 bg-muted rounded">
+                <p><strong>Demo Credentials:</strong></p>
+                <p>User: user@demo.com / password123</p>
+                <p>Admin: admin@demo.com / admin123</p>
+              </div>
             </div>
 
             {/* Back to Home */}

@@ -30,20 +30,70 @@ import {
   BookOpen, 
   Calendar,
   Search,
-  Filter
+  Filter,
+  Eye,
+  MoreHorizontal
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useAppSelector } from '@/app/hooks';
 import { Navbar } from '@/components/Navbar';
+import { AddBookModal } from '@/components/admin/AddBookModal';
+import { EditBookModal } from '@/components/admin/EditBookModal';
+import { DeleteConfirmModal } from '@/components/admin/DeleteConfirmModal';
+import { toast } from '@/hooks/use-toast';
+
+interface AdminBook {
+  id: number;
+  title: string;
+  author: string;
+  category: string;
+  stock: number;
+  status: string;
+  pages?: number;
+  description?: string;
+  cover_url?: string;
+  rating?: number;
+}
+
+interface BorrowedBook {
+  id: number;
+  bookTitle: string;
+  userName: string;
+  userEmail: string;
+  borrowDate: string;
+  dueDate: string;
+  status: 'BORROWED' | 'RETURNED' | 'OVERDUE';
+}
+
+interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  role: 'USER' | 'ADMIN';
+  joinedDate: string;
+  booksCount: number;
+  avatar?: string;
+}
 
 export const AdminPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAppSelector(state => state.auth);
   
   const [searchQuery, setSearchQuery] = useState('');
+  const [bookFilter, setBookFilter] = useState('All');
   const [isAddBookOpen, setIsAddBookOpen] = useState(false);
+  const [isEditBookOpen, setIsEditBookOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<AdminBook | null>(null);
+  const [deleteItem, setDeleteItem] = useState<{ type: 'book' | 'user', id: number, name: string } | null>(null);
 
   // Mock data
-  const [books] = useState([
+  const [books, setBooks] = useState<AdminBook[]>([
     {
       id: 1,
       title: 'The Psychology of Money',
@@ -70,7 +120,7 @@ export const AdminPage: React.FC = () => {
     }
   ]);
 
-  const [borrowedBooks] = useState([
+  const [borrowedBooks] = useState<BorrowedBook[]>([
     {
       id: 1,
       bookTitle: 'The Psychology of Money',
@@ -91,7 +141,7 @@ export const AdminPage: React.FC = () => {
     }
   ]);
 
-  const [users] = useState([
+  const [users] = useState<AdminUser[]>([
     {
       id: 1,
       name: 'John Doe',
@@ -123,6 +173,56 @@ export const AdminPage: React.FC = () => {
       navigate('/');
     }
   }, [isAuthenticated, user, navigate]);
+
+  const handleEditBook = (book: AdminBook) => {
+    setSelectedBook(book);
+    setIsEditBookOpen(true);
+  };
+
+  const handleDeleteBook = (book: AdminBook) => {
+    setDeleteItem({ type: 'book', id: book.id, name: book.title });
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteUser = (user: AdminUser) => {
+    setDeleteItem({ type: 'user', id: user.id, name: user.name });
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteItem?.type === 'book') {
+      setBooks(prev => prev.filter(book => book.id !== deleteItem.id));
+    }
+    // Handle user deletion if needed
+    setDeleteItem(null);
+  };
+
+  const handleBookAdded = () => {
+    // Refresh books list
+    toast({
+      title: 'Success',
+      description: 'Book list has been updated.',
+    });
+  };
+
+  const handleBookUpdated = () => {
+    // Refresh books list
+    toast({
+      title: 'Success', 
+      description: 'Book information has been updated.',
+    });
+  };
+
+  const filteredBooks = books.filter(book => {
+    const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         book.author.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = bookFilter === 'All' || 
+                         (bookFilter === 'Available' && book.status === 'Available') ||
+                         (bookFilter === 'Borrowed' && book.status === 'Borrowed') ||
+                         (bookFilter === 'Returned' && book.status === 'Returned') ||
+                         (bookFilter === 'Damaged' && book.status === 'Damaged');
+    return matchesSearch && matchesFilter;
+  });
 
   if (!isAuthenticated || user?.role !== 'ADMIN') {
     return null;
