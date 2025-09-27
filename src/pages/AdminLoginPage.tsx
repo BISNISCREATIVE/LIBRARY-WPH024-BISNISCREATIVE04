@@ -9,6 +9,7 @@ import { BookOpen, Eye, EyeOff, Mail, Lock, Shield } from 'lucide-react';
 import { useAppDispatch } from '@/app/hooks';
 import { loginStart, loginSuccess, loginFailure } from '@/features/auth/authSlice';
 import { toast } from '@/hooks/use-toast';
+import { authAPI } from '@/api/auth';
 
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -65,19 +66,7 @@ export const AdminLoginPage: React.FC = () => {
     dispatch(loginStart());
 
     try {
-      const response = await fetch('https://belibraryformentee-production.up.railway.app/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-      
-      const data = await response.json();
+      const data = await authAPI.login(formData);
       
       // Check if user is admin
       if (data.user?.role !== 'ADMIN') {
