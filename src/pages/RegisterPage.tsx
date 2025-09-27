@@ -9,6 +9,7 @@ import { BookOpen, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAppDispatch } from '@/app/hooks';
 import { loginSuccess } from '@/features/auth/authSlice';
 import { toast } from '@/hooks/use-toast';
+import { authAPI } from '@/api/auth';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -79,23 +80,11 @@ export const RegisterPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://belibraryformentee-production.up.railway.app/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+      const data = await authAPI.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
       });
-      
-      if (!response.ok) {
-        throw new Error('Registration failed');
-      }
-      
-      const data = await response.json();
       
       dispatch(loginSuccess({
         user: data.user,
