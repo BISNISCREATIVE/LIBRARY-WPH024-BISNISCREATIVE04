@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAppDispatch } from '@/app/hooks';
 import { loginSuccess } from '@/features/auth/authSlice';
@@ -20,6 +21,7 @@ export const RegisterPage: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    role: 'USER' as 'USER' | 'ADMIN'
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -84,6 +86,7 @@ export const RegisterPage: React.FC = () => {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        role: formData.role
       });
       
       dispatch(loginSuccess({
@@ -123,9 +126,7 @@ export const RegisterPage: React.FC = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
+            <img src="/src/assets/booky-logo.png" alt="Booky" className="w-10 h-10" />
             <span className="text-2xl font-bold text-primary">Booky</span>
           </Link>
         </div>
@@ -216,6 +217,20 @@ export const RegisterPage: React.FC = () => {
                 {errors.password && (
                   <p className="text-sm text-destructive">{errors.password}</p>
                 )}
+              </div>
+
+              {/* Role Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="role">Register as</Label>
+                <Select value={formData.role} onValueChange={(value: 'USER' | 'ADMIN') => setFormData(prev => ({ ...prev, role: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USER">User</SelectItem>
+                    <SelectItem value="ADMIN">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Confirm Password Field */}

@@ -289,13 +289,61 @@ export const AdminPage: React.FC = () => {
         </div>
 
         {/* Admin Tabs */}
-        <Tabs defaultValue="books" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="books">Book List</TabsTrigger>
             <TabsTrigger value="borrowed">Borrowed List</TabsTrigger>
             <TabsTrigger value="users">User List</TabsTrigger>
             <TabsTrigger value="add">Add Book</TabsTrigger>
           </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/admin/books')}>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <BookOpen className="w-5 h-5" />
+                    <span>Book Management</span>
+                  </CardTitle>
+                  <CardDescription>Manage library books, add new titles, edit details</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-primary">{stats.totalBooks}</div>
+                  <p className="text-muted-foreground">Total Books</p>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/admin/users')}>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Users className="w-5 h-5" />
+                    <span>User Management</span>
+                  </CardTitle>
+                  <CardDescription>Manage user accounts and permissions</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-primary">{stats.totalUsers}</div>
+                  <p className="text-muted-foreground">Total Users</p>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/admin/users')}>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Calendar className="w-5 h-5" />
+                    <span>Borrowed List</span>
+                  </CardTitle>
+                  <CardDescription>Monitor borrowed books and due dates</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-primary">{stats.totalBorrowed}</div>
+                  <p className="text-muted-foreground">Currently Borrowed</p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           {/* Books Tab */}
           <TabsContent value="books">

@@ -14,6 +14,8 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { SuccessPage } from "./pages/SuccessPage";
 import { CategoryPage } from "./pages/CategoryPage";
 import { AuthorPage } from "./pages/AuthorPage";
+import { BookManagementPage } from "./pages/admin/BookManagementPage";
+import { UsersManagementPage } from "./pages/admin/UsersManagementPage";
 import { AdminPage } from "./pages/AdminPage";
 import { MyLoansPage } from "./pages/MyLoansPage";
 import { CheckoutPage } from "./components/CheckoutPage";
@@ -39,6 +41,8 @@ const App = () => (
           <Route path="/my-loans" element={<MyLoansPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/books" element={<BookManagementPage />} />
+          <Route path="/admin/users" element={<UsersManagementPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

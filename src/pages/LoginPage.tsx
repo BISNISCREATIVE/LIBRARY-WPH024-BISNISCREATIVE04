@@ -106,9 +106,7 @@ export const LoginPage: React.FC = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
+            <img src="/src/assets/booky-logo.png" alt="Booky" className="w-10 h-10" />
             <span className="text-2xl font-bold text-primary">Booky</span>
           </Link>
         </div>

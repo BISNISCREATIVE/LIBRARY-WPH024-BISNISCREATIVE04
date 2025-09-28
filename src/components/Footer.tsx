@@ -15,9 +15,7 @@ export const Footer: React.FC = () => {
       <div className="max-w-4xl mx-auto text-center space-y-6">
         {/* Logo */}
         <div className="flex items-center justify-center space-x-2 mb-6">
-          <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-white" />
-          </div>
+          <img src="/src/assets/booky-logo.png" alt="Booky" className="w-8 h-8" />
           <span className="text-xl font-bold text-primary">Booky</span>
         </div>
 

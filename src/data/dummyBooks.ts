@@ -164,30 +164,30 @@ export const dummyBooks: Book[] = [
   },
 ];
 
-// Popular authors data
+// Popular authors data with real avatars
 export const popularAuthors = [
   {
     id: 1,
     name: "Author name",
-    avatar: "/api/placeholder/64/64?text=A1",
+    avatar: "/src/assets/author-avatar-1.png",
     booksCount: 5,
   },
   {
     id: 2,
-    name: "Author name",
-    avatar: "/api/placeholder/64/64?text=A2",
+    name: "Author name", 
+    avatar: "/src/assets/author-avatar-2.png",
     booksCount: 5,
   },
   {
     id: 3,
     name: "Author name",
-    avatar: "/api/placeholder/64/64?text=A3",
+    avatar: "/src/assets/author-avatar-3.png",
     booksCount: 5,
   },
   {
     id: 4,
     name: "Author name",
-    avatar: "/api/placeholder/64/64?text=A4",
+    avatar: "/src/assets/author-avatar-4.png",
     booksCount: 5,
   },
 ];
