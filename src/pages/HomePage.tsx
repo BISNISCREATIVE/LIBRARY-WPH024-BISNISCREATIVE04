@@ -26,41 +26,45 @@ export const HomePage: React.FC = () => {
   const [popularBooks, setPopularBooks] = useState<Book[]>([]);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visibleAuthorsCount, setVisibleAuthorsCount] = useState(4); // Tambahkan state untuk jumlah penulis yang terlihat
 
   useEffect(() => {
     const loadHomeData = async () => {
       try {
         setLoading(true);
-        
-        // Mock featured books
+
+        // Featured Books based on the images provided
         const mockFeaturedBooks: Book[] = [
-          { id: 1, title: '21 Raga Bakso Pak Bowo', author: 'TuHu', category: 'Fiction', stock: 5, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=Bakso+Book' },
-          { id: 2, title: 'Lisa Kleypas Irresistible', author: 'Lisa Kleypas', category: 'Romance', stock: 3, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=Lisa+Book' },
-          { id: 3, title: 'Oliver Twist', author: 'Charles Dickens', category: 'Classic', stock: 4, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=Oliver+Book' },
-          { id: 4, title: 'Jack London White Fang', author: 'Jack London', category: 'Adventure', stock: 6, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=White+Fang' },
-          { id: 5, title: 'The Scarred Woman', author: 'Jussi Adler-Olsen', category: 'Thriller', stock: 2, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=Scarred+Book' }
+          { id: 1, title: '21 Rasa Bakso Pak Bowo', author: 'TuHu', category: 'Fiction', stock: 5, rating: 4.9, cover_url: '/images/covers/bakso.png' },
+          { id: 2, title: 'Lisa Kleypas Irresistible', author: 'Lisa Kleypas', category: 'Romance', stock: 3, rating: 4.9, cover_url: '/images/covers/Lisa Kleypas Irresistible.jpg' },
+          { id: 3, title: 'Oliver Twist', author: 'Charles Dickens', category: 'Classic', stock: 4, rating: 4.9, cover_url: '/images/covers/olivertwist.png' },
+          { id: 4, title: 'Jack London White Fang', author: 'Jack London', category: 'Adventure', stock: 6, rating: 4.9, cover_url: '/images/covers/Jack London White Fang.png' },
+          { id: 5, title: 'The Scarred Woman', author: 'Jussi Adler-Olsen', category: 'Thriller', stock: 2, rating: 4.9, cover_url: '/images/covers/The Scarred Woman.jpg' }
         ];
 
-        // Mock popular books (second row)
+        // Popular Books (second row)
         const mockPopularBooks: Book[] = [
-          { id: 6, title: 'Silent Snow', author: 'Robert Grosso', category: 'Drama', stock: 3, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=Silent+Snow' },
-          { id: 7, title: 'Kapan Pindah Rumah', author: 'Various', category: 'Self-Help', stock: 5, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=Pindah+Rumah' },
-          { id: 8, title: 'Yeti Terbersik Yang Abadi', author: 'Local Author', category: 'Fantasy', stock: 4, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=Yeti+Book' },
-          { id: 9, title: 'Rumah Yang Menelan Penghuninya', author: 'Kenken Layla', category: 'Horror', stock: 2, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=Rumah+Horror' },
-          { id: 10, title: 'Other Half of Me', author: 'Elsa Puspita', category: 'Romance', stock: 6, rating: 4.9, cover_url: 'https://via.placeholder.com/200x300?text=Other+Half' }
+          { id: 6, title: 'The Psychology of Money', author: 'Morgan Housel', category: 'Business & Economics', stock: 3, rating: 4.9, cover_url: '/images/covers/psychology-of-money.jpg' },
+          { id: 7, title: 'Kapan Pindah Rumah', author: 'Various', category: 'Self-Help', stock: 5, rating: 4.9, cover_url: '/images/covers/kapanpindahrumah.png' },
+          { id: 8, title: 'Yeti dan Terik yang Abadi', author: 'Lokal Author', category: 'Fantasy', stock: 4, rating: 4.9, cover_url: '/images/covers/yetiterikabadi.png' },
+          { id: 9, title: 'Rumah Yang Menelan Penghuninya', author: 'Kenken Layla', category: 'Horror', stock: 2, rating: 4.9, cover_url: '/images/covers/rumahyangmenelan.png' },
+          { id: 10, title: 'Other Half of Me', author: 'Elsa Puspita', category: 'Romance', stock: 6, rating: 4.9, cover_url: '/images/covers/otherhalfofme.png' }
         ];
 
-        // Mock authors
+        // Popular Authors based on the images (extend for 'Load More')
         const mockAuthors: Author[] = [
-          { id: 1, name: 'Author name', books_count: 5, avatar: 'https://via.placeholder.com/64x64?text=A1' },
-          { id: 2, name: 'Author name', books_count: 5, avatar: 'https://via.placeholder.com/64x64?text=A2' },
-          { id: 3, name: 'Author name', books_count: 5, avatar: 'https://via.placeholder.com/64x64?text=A3' },
-          { id: 4, name: 'Author name', books_count: 5, avatar: 'https://via.placeholder.com/64x64?text=A4' }
+          { id: 1, name: 'John Doe', books_count: 5, avatar: '/images/avatars/avatar1.png' },
+          { id: 2, name: 'Jane Smith', books_count: 3, avatar: '/images/avatars/avatar2.png' },
+          { id: 3, name: 'Robert Johnson', books_count: 7, avatar: '/images/avatars/avatar3.png' },
+          { id: 4, name: 'Emily White', books_count: 2, avatar: '/images/avatars/avatar4.png' },
+          { id: 5, name: 'David Wilson', books_count: 9, avatar: '/images/avatars/avatar5.png' },
+          { id: 6, name: 'Olivia Davis', books_count: 4, avatar: '/images/avatars/avatar6.png' },
+          { id: 7, name: 'Michael Brown', books_count: 6, avatar: '/images/avatars/avatar7.png' },
         ];
 
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         setFeaturedBooks(mockFeaturedBooks);
         setPopularBooks(mockPopularBooks);
         setAuthors(mockAuthors);
@@ -78,11 +82,15 @@ export const HomePage: React.FC = () => {
 
     loadHomeData();
   }, [toast]);
+  
+  const handleLoadMoreAuthors = () => {
+    setVisibleAuthorsCount(prevCount => prevCount + 4);
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <main>
         {/* Hero Section */}
         <HeroSection />
@@ -102,7 +110,6 @@ export const HomePage: React.FC = () => {
               <BookCard key={book.id} book={book} />
             ))}
           </div>
-
         </section>
 
         {/* Second Row of Books */}
@@ -123,10 +130,10 @@ export const HomePage: React.FC = () => {
             )}
           </div>
 
-          {/* Load More Button */}
+          {/* Load More Button for Books */}
           <div className="text-center mb-12">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => navigate('/books')}
               className="px-8"
             >
@@ -155,9 +162,9 @@ export const HomePage: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {authors.map((author) => (
+              {authors.slice(0, visibleAuthorsCount).map((author) => (
                 <div key={author.id} className="flex items-center space-x-3 p-4 bg-card rounded-lg border hover:shadow-md transition-shadow cursor-pointer"
-                     onClick={() => navigate(`/author/${encodeURIComponent(author.name)}`)}>
+                  onClick={() => navigate(`/author/${encodeURIComponent(author.name)}`)}>
                   <Avatar className="w-12 h-12">
                     <AvatarImage src={author.avatar} alt={author.name} />
                     <AvatarFallback>{author.name.charAt(0).toUpperCase()}</AvatarFallback>
@@ -171,6 +178,19 @@ export const HomePage: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+          
+          {/* Load More Button for Authors */}
+          {visibleAuthorsCount < authors.length && (
+            <div className="text-center mt-8">
+              <Button
+                variant="outline"
+                onClick={handleLoadMoreAuthors}
+                className="px-8"
+              >
+                Load More
+              </Button>
             </div>
           )}
         </section>

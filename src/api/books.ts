@@ -67,4 +67,42 @@ export const booksAPI = {
     const { data } = await api.get(`/books/author/${encodeURIComponent(author)}?limit=${limit}`);
     return data;
   },
+
+  createBook: async (bookData: Omit<Book, 'id'> & { coverFile?: File }): Promise<Book> => {
+    const formData = new FormData();
+    formData.append('title', bookData.title);
+    formData.append('author', bookData.author);
+    formData.append('category', bookData.category);
+    formData.append('pages', String(bookData.pages ?? ''));
+    formData.append('description', bookData.description ?? '');
+    if (bookData.coverFile) {
+      formData.append('cover', bookData.coverFile);
+    }
+    // Tambahkan field lain jika perlu
+    const { data } = await api.post('/books', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data;
+  },
+
+  updateBook: async (id: number, bookData: Partial<Omit<Book, 'id'>> & { coverFile?: File }): Promise<Book> => {
+    const formData = new FormData();
+    if (bookData.title) formData.append('title', bookData.title);
+    if (bookData.author) formData.append('author', bookData.author);
+    if (bookData.category) formData.append('category', bookData.category);
+    if (bookData.pages !== undefined) formData.append('pages', String(bookData.pages));
+    if (bookData.description) formData.append('description', bookData.description);
+    if (bookData.coverFile) {
+      formData.append('cover', bookData.coverFile);
+    }
+    // Tambahkan field lain jika perlu
+    const { data } = await api.put(`/books/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data;
+  },
+
+  deleteBook: async (id: number): Promise<void> => {
+    await api.delete(`/books/${id}`);
+  },
 };

@@ -26,7 +26,6 @@ import { AddBookModal } from '@/components/admin/AddBookModal';
 import { EditBookModal } from '@/components/admin/EditBookModal';
 import { DeleteConfirmModal } from '@/components/admin/DeleteConfirmModal';
 import { booksAPI, Book } from '@/api/books';
-import { dummyBooks } from '@/data/dummyBooks';
 import { toast } from '@/hooks/use-toast';
 
 export const BookManagementPage: React.FC = () => {
@@ -34,7 +33,7 @@ export const BookManagementPage: React.FC = () => {
   const { user, isAuthenticated } = useAppSelector(state => state.auth);
   
   const [searchQuery, setSearchQuery] = useState('');
-  const [books, setBooks] = useState<Book[]>(dummyBooks);
+  const [books, setBooks] = useState<Book[]>([]);
   const [isAddBookOpen, setIsAddBookOpen] = useState(false);
   const [isEditBookOpen, setIsEditBookOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -54,14 +53,8 @@ export const BookManagementPage: React.FC = () => {
   const loadBooks = async () => {
     setIsLoading(true);
     try {
-      // Try to fetch from API, fallback to dummy data
-      try {
-        const data = await booksAPI.getBooks();
-        setBooks(data.books);
-      } catch (apiError) {
-        console.log('API not available, using dummy data');
-        // Keep dummy data as fallback
-      }
+      const data = await booksAPI.getBooks();
+      setBooks(data.books);
     } catch (error) {
       toast({
         title: 'Error',
@@ -83,13 +76,22 @@ export const BookManagementPage: React.FC = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (selectedBook) {
-      setBooks(prev => prev.filter(book => book.id !== selectedBook.id));
-      toast({
-        title: 'Success',
-        description: 'Book deleted successfully',
-      });
+      try {
+        await booksAPI.deleteBook(selectedBook.id);
+        toast({
+          title: 'Success',
+          description: 'Book deleted successfully',
+        });
+        loadBooks();
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to delete book',
+          variant: 'destructive',
+        });
+      }
     }
     setSelectedBook(null);
   };
@@ -123,41 +125,40 @@ export const BookManagementPage: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-2 md:px-4 py-6 md:py-8">
         {/* Navigation Tabs */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
           <Tabs defaultValue="books" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="borrowed">Borrowed List</TabsTrigger>
               <TabsTrigger value="users">User</TabsTrigger>
               <TabsTrigger value="books">Book List</TabsTrigger>
             </TabsList>
-
             {/* Books Tab */}
-            <TabsContent value="books" className="mt-8">
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h1 className="text-3xl font-bold">Book List</h1>
-                  <Button onClick={() => setIsAddBookOpen(true)}>
+            <TabsContent value="books" className="mt-6 md:mt-8">
+              <div className="space-y-6 md:space-y-8">
+                <div className="mb-2">
+                  <h1 className="text-3xl md:text-4xl font-bold mb-2">Book List</h1>
+                  <p className="text-muted-foreground text-base md:text-lg mb-4">Manage all books in the library. Add, edit, or remove books as needed.</p>
+                </div>
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 md:gap-0">
+                  <div className="relative max-w-md w-full md:w-96">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                    <Input
+                      placeholder="Search books..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <Button onClick={() => setIsAddBookOpen(true)} className="w-full md:w-auto py-2 md:py-0 text-base font-semibold">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Book
                   </Button>
                 </div>
-                
-                {/* Search */}
-                <div className="relative max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                  <Input
-                    placeholder="Search books..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-
                 {/* Desktop Table */}
                 <div className="hidden md:block">
-                  <Card>
+                  <Card className="shadow-lg rounded-xl">
                     <CardContent className="p-0">
                       <Table>
                         <TableHeader>
@@ -178,18 +179,19 @@ export const BookManagementPage: React.FC = () => {
                                 <img 
                                   src={book.cover_url} 
                                   alt={book.title}
-                                  className="w-12 h-16 object-cover rounded"
+                                  className="w-12 h-16 object-cover rounded border"
                                 />
                               </TableCell>
-                              <TableCell className="font-medium">{book.title}</TableCell>
-                              <TableCell>{book.author}</TableCell>
+                              <TableCell className="font-semibold text-base">{book.title}</TableCell>
+                              <TableCell className="text-base">{book.author}</TableCell>
                               <TableCell>
-                                <Badge variant="secondary">{book.category}</Badge>
+                                <Badge variant="secondary" className="text-xs px-2 py-1 rounded">{book.category}</Badge>
                               </TableCell>
                               <TableCell>{book.stock}</TableCell>
                               <TableCell>
-                                <div className="flex items-center">
-                                  ⭐ {book.rating?.toFixed(1) || 'N/A'}
+                                <div className="flex items-center gap-1">
+                                  <span className="text-yellow-500">★</span>
+                                  <span className="font-medium">{book.rating?.toFixed(1) || 'N/A'}</span>
                                 </div>
                               </TableCell>
                               <TableCell>
@@ -225,28 +227,28 @@ export const BookManagementPage: React.FC = () => {
                     </CardContent>
                   </Card>
                 </div>
-
                 {/* Mobile Cards */}
                 <div className="md:hidden space-y-4">
                   {filteredBooks.map((book) => (
-                    <Card key={book.id}>
-                      <CardContent className="p-4">
+                    <Card key={book.id} className="shadow-md rounded-xl">
+                      <CardContent className="p-4 flex flex-col gap-2">
                         <div className="flex space-x-4">
                           <img 
                             src={book.cover_url} 
                             alt={book.title}
-                            className="w-16 h-20 object-cover rounded flex-shrink-0"
+                            className="w-16 h-20 object-cover rounded border flex-shrink-0"
                           />
                           <div className="flex-1 space-y-2">
                             <h3 className="font-semibold text-lg">{book.title}</h3>
-                            <p className="text-muted-foreground">{book.author}</p>
+                            <p className="text-muted-foreground text-sm">{book.author}</p>
                             <div className="flex items-center space-x-2">
-                              <Badge variant="secondary">{book.category}</Badge>
-                              <span className="text-sm">Stock: {book.stock}</span>
+                              <Badge variant="secondary" className="text-xs px-2 py-1 rounded">{book.category}</Badge>
+                              <span className="text-xs">Stock: {book.stock}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                ⭐ <span className="ml-1">{book.rating?.toFixed(1) || 'N/A'}</span>
+                              <div className="flex items-center gap-1">
+                                <span className="text-yellow-500">★</span>
+                                <span className="font-medium">{book.rating?.toFixed(1) || 'N/A'}</span>
                               </div>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -279,13 +281,12 @@ export const BookManagementPage: React.FC = () => {
                     </Card>
                   ))}
                 </div>
-
                 {/* Pagination */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-2 md:gap-0">
                   <p className="text-sm text-muted-foreground">
                     Showing {filteredBooks.length} of {books.length} books
                   </p>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1 md:space-x-2">
                     <Button variant="outline" size="sm">Previous</Button>
                     <Button variant="outline" size="sm" className="bg-primary text-primary-foreground">1</Button>
                     <Button variant="outline" size="sm">2</Button>
@@ -296,7 +297,6 @@ export const BookManagementPage: React.FC = () => {
                 </div>
               </div>
             </TabsContent>
-
             {/* Other tabs placeholder */}
             <TabsContent value="borrowed" className="mt-8">
               <div className="text-center py-12">

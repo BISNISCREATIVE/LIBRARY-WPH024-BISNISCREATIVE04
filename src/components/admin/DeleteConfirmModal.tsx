@@ -31,15 +31,13 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   const handleConfirm = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      if (onConfirm) {
+        await onConfirm();
+      }
       toast({
         title: 'Deleted',
         description: `${itemName} has been deleted successfully.`,
       });
-      
-      onConfirm?.();
       onClose();
     } catch (error) {
       toast({
@@ -54,19 +52,16 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md shadow-xl rounded-xl px-2 md:px-8 py-6 md:py-8">
         <DialogHeader>
-          <DialogTitle className="text-lg">{title}</DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            {description}
-          </DialogDescription>
+          <DialogTitle className="text-xl md:text-2xl font-bold mb-2">{title}</DialogTitle>
+          <DialogDescription className="text-muted-foreground text-base mb-4">{description}</DialogDescription>
         </DialogHeader>
-
-        <div className="flex gap-3 justify-end mt-6">
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+        <div className="flex flex-col md:flex-row gap-3 justify-end mt-6">
+          <Button variant="outline" onClick={onClose} disabled={isLoading} className="w-full md:w-auto">
             Cancel
           </Button>
-          <Button variant="destructive" onClick={handleConfirm} disabled={isLoading}>
+          <Button variant="destructive" onClick={handleConfirm} disabled={isLoading} className="w-full md:w-auto">
             {isLoading ? 'Deleting...' : 'Confirm'}
           </Button>
         </div>

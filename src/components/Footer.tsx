@@ -36,7 +36,7 @@ export const Footer: React.FC = () => {
               size="sm" 
               className="w-10 h-10 p-0 hover:bg-primary/10 hover:text-primary transition-colors"
               aria-label="Facebook"
-              onClick={() => window.open('https://facebook.com/booky', '_blank')}
+              onClick={() => window.open('https://facebook.com/bisniscreative', '_blank')}
             >
               <Facebook className="w-5 h-5" />
             </Button>
@@ -63,7 +63,7 @@ export const Footer: React.FC = () => {
               size="sm" 
               className="w-10 h-10 p-0 hover:bg-primary/10 hover:text-primary transition-colors"
               aria-label="TikTok"
-              onClick={() => window.open('https://tiktok.com/@booky', '_blank')}
+              onClick={() => window.open('https://tiktok.com', '_blank')}
             >
               <TikTokIcon className="w-5 h-5" />
             </Button>

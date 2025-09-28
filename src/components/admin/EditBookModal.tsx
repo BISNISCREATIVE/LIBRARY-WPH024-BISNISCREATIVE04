@@ -63,6 +63,8 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (book) {
@@ -74,6 +76,8 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
         description: book.description || '',
         cover_url: book.cover_url || ''
       });
+      setCoverPreview(book.cover_url || null);
+      setCoverFile(null);
     }
   }, [book]);
 
@@ -92,9 +96,21 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
     if (!formData.category) newErrors.category = 'Category is required';
     if (!formData.pages.trim()) newErrors.pages = 'Number of pages is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
-
+    if (coverFile) {
+      if (!['image/png', 'image/jpeg'].includes(coverFile.type)) newErrors.cover = 'Only PNG or JPG allowed';
+      else if (coverFile.size > 5 * 1024 * 1024) newErrors.cover = 'Max file size is 5MB';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCoverFile(file);
+      setCoverPreview(URL.createObjectURL(file));
+      setErrors(prev => ({ ...prev, cover: '' }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,8 +120,15 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { updateBook } = await import('@/api/books');
+      await updateBook(book.id, {
+        title: formData.title,
+        author: formData.author,
+        category: formData.category,
+        pages: Number(formData.pages),
+        description: formData.description,
+        coverFile: coverFile || undefined,
+      });
       
       toast({
         title: 'Success',
@@ -114,10 +137,10 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
       
       onBookUpdated?.();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: 'Failed to update book. Please try again.',
+        description: error?.response?.data?.message || 'Failed to update book. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -129,26 +152,25 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl rounded-xl px-2 md:px-8 py-6 md:py-8">
         <DialogHeader>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-2">
             <Button variant="ghost" size="sm" onClick={onClose}>
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>
-              <DialogTitle className="text-xl">Edit Book</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-2xl md:text-3xl font-bold mb-2">Edit Book</DialogTitle>
+              <DialogDescription className="text-muted-foreground text-base md:text-lg mb-4">
                 Update the book information
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
-
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Title */}
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title" className="font-semibold">Title</Label>
               <Input
                 id="title"
                 value={formData.title}
@@ -160,10 +182,9 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
                 <p className="text-sm text-destructive">{errors.title}</p>
               )}
             </div>
-
             {/* Author */}
             <div className="space-y-2">
-              <Label htmlFor="author">Author</Label>
+              <Label htmlFor="author" className="font-semibold">Author</Label>
               <Input
                 id="author"
                 value={formData.author}
@@ -175,10 +196,9 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
                 <p className="text-sm text-destructive">{errors.author}</p>
               )}
             </div>
-
             {/* Category */}
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category" className="font-semibold">Category</Label>
               <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
                 <SelectTrigger className={errors.category ? 'border-destructive' : ''}>
                   <SelectValue placeholder="Select Category" />
@@ -195,10 +215,9 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
                 <p className="text-sm text-destructive">{errors.category}</p>
               )}
             </div>
-
             {/* Number of Pages */}
             <div className="space-y-2">
-              <Label htmlFor="pages">Number of Pages</Label>
+              <Label htmlFor="pages" className="font-semibold">Number of Pages</Label>
               <Input
                 id="pages"
                 type="number"
@@ -212,10 +231,9 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
               )}
             </div>
           </div>
-
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="font-semibold">Description</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -228,46 +246,64 @@ export const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, b
               <p className="text-sm text-destructive">{errors.description}</p>
             )}
           </div>
-
           {/* Cover Image */}
           <div className="space-y-2">
-            <Label>Cover Image</Label>
-            {formData.cover_url ? (
+            <Label className="font-semibold">Cover Image</Label>
+            {coverPreview ? (
               <div className="space-y-4">
                 <div className="flex justify-center">
                   <img
-                    src={formData.cover_url}
+                    src={coverPreview}
                     alt="Book cover"
-                    className="w-32 h-40 object-cover rounded-lg border"
+                    className="w-32 h-40 object-cover rounded-lg border shadow"
                   />
                 </div>
                 <div className="flex gap-2 justify-center">
-                  <Button type="button" variant="outline" size="sm">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Change Image
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" className="text-destructive">
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg"
+                    onChange={handleCoverChange}
+                    className="hidden"
+                    id="cover-upload-edit"
+                  />
+                  <label htmlFor="cover-upload-edit">
+                    <Button type="button" variant="outline" size="sm" asChild>
+                      <span>
+                        <Upload className="w-4 h-4 mr-2" />
+                        Change Image
+                      </span>
+                    </Button>
+                  </label>
+                  <Button type="button" variant="outline" size="sm" className="text-destructive" onClick={() => { setCoverFile(null); setCoverPreview(null); setFormData(f => ({ ...f, cover_url: '' })); }}>
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete Image
                   </Button>
                 </div>
                 <p className="text-xs text-center text-muted-foreground">PNG or JPG (max. 5mb)</p>
+                {errors.cover && <p className="text-sm text-destructive mt-2">{errors.cover}</p>}
               </div>
             ) : (
-              <div className="border-2 border-dashed border-muted-foreground rounded-lg p-8 text-center">
+              <div className={`border-2 border-dashed rounded-lg p-6 md:p-8 text-center ${errors.cover ? 'border-destructive' : 'border-muted-foreground'}`}>
                 <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground mb-2">
-                  <Button variant="link" className="p-0 h-auto text-primary">
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  onChange={handleCoverChange}
+                  className="hidden"
+                  id="cover-upload-edit"
+                />
+                <label htmlFor="cover-upload-edit">
+                  <Button variant="link" className="p-0 h-auto text-primary cursor-pointer font-semibold">
                     Click to upload
                   </Button>
-                  {' '}or drag and drop
-                </p>
+                </label>
+                <span> or drag and drop</span>
                 <p className="text-xs text-muted-foreground">PNG or JPG (max. 5mb)</p>
+                {errors.cover && <p className="text-sm text-destructive mt-2">{errors.cover}</p>}
               </div>
             )}
           </div>
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full md:w-auto" disabled={isLoading}>
             {isLoading ? 'Saving...' : 'Save'}
           </Button>
         </form>
